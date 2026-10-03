@@ -11,7 +11,7 @@ The repository has two parts:
 | **Database** | [`db/`](db) | The PostgreSQL implementation: schema, sample data, queries, constraint tests, trigram-index demo. **This is the core of the project.** |
 | **Web interface** | `src/` | A React prototype that presents the same data. It is a static site (GitHub Pages) and **does not query PostgreSQL at run time**. |
 
-Live prototype: https://aad1dahiya.github.io/academic-repo/
+Live prototype: https://balgovindb.github.io/academic-repo/
 
 ## How the two parts are connected
 
