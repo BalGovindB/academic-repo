@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Academic metadata explorer built with React, TypeScript, Tailwind CSS, React Router, and Recharts.",
+  "description": "Prototype web interface for the Academic Research Metadata Repository (PostgreSQL database project).",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "export-data": "sh scripts/export-ui-data.sh"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.3",
