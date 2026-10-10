@@ -1,6 +1,6 @@
 # Database scripts — Academic Research Metadata Repository
 
-Tested on PostgreSQL 16 (works on 14+). All sample data is fictional.
+Run and checked on PostgreSQL 18.6; other versions are not tested. All sample data is fictional.
 
 | Order | File | What it does |
 |---|---|---|
@@ -20,7 +20,7 @@ createdb arm                       # or create a database in pgAdmin
 psql -d arm -v ON_ERROR_STOP=1 -f 01_schema.sql
 psql -d arm -v ON_ERROR_STOP=1 -f 02_seed.sql
 psql -d arm -f 03_queries.sql
-psql -d arm -f 04_constraint_tests.sql
+psql -d arm -f 04_constraint_tests.sql   # on Windows add: -v nulldev=NUL
 psql -d arm -f 05_trigram_demo.sql
 ```
 

@@ -1,6 +1,6 @@
 -- =====================================================================
 -- Academic Research Metadata Repository : 01_schema.sql
--- PostgreSQL 14+ (tested on 16).  Run order: 01 -> 02 -> 03/04/05
+-- Run and checked on PostgreSQL 18.6.  Run order: 01 -> 02 -> 03/04/05
 -- Re-runnable: drops and recreates everything.
 -- =====================================================================
 

@@ -9,7 +9,7 @@ FROM paper p
 JOIN journal   j  ON j.journal_id   = p.journal_id
 JOIN publisher pb ON pb.publisher_id = j.publisher_id
 ORDER BY p.paper_id
-LIMIT 10;
+LIMIT 8;
 
 \echo '--- Q2  M:N via bridge table: authors of each paper in author_order'
 SELECT p.paper_id, p.title,
@@ -19,7 +19,7 @@ JOIN paper_author pa ON pa.paper_id  = p.paper_id
 JOIN author a        ON a.author_id  = pa.author_id
 GROUP BY p.paper_id, p.title
 ORDER BY p.paper_id
-LIMIT 10;
+LIMIT 8;
 
 \echo '--- Q3  Search by author name (UI: author search)'
 SELECT p.paper_id, p.title, p.pub_year, pa.author_order
@@ -67,7 +67,7 @@ FROM paper p
 LEFT JOIN citation c ON c.cited_paper_id = p.paper_id
 GROUP BY p.paper_id, p.title
 ORDER BY times_cited DESC, p.paper_id
-LIMIT 10;
+LIMIT 8;
 
 \echo '--- Q9  Citation RANKING with ties handled (window function RANK)'
 SELECT rank() OVER (ORDER BY n DESC) AS rnk, paper_id, title, n AS times_cited

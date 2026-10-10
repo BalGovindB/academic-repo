@@ -30,14 +30,14 @@ include one.
 
 ## Database (`db/`)
 
-Requires PostgreSQL 14 or later (tested on 16).
+Run and checked on PostgreSQL 18.6; other versions are not tested.
 
 ```bash
 createdb arm
 psql -d arm -v ON_ERROR_STOP=1 -f db/01_schema.sql    # 8 tables, constraints, triggers, indexes (incl. pg_trgm GIN)
 psql -d arm -v ON_ERROR_STOP=1 -f db/02_seed.sql      # 24 papers, 11 authors, 6 publishers, 8 journals, 9 subjects, 45 citations
 psql -d arm -f db/03_queries.sql                      # 21 demonstration queries
-psql -d arm -f db/04_constraint_tests.sql             # 39 rule-violation tests, expected: passed 39, failed 0
+psql -d arm -f db/04_constraint_tests.sql             # 39 rule-violation tests, expected: passed 39, failed 0 (on Windows add -v nulldev=NUL)
 psql -d arm -f db/05_trigram_demo.sql                 # 200,000-row EXPLAIN ANALYZE comparison, with and without the index
 ```
 
@@ -79,7 +79,7 @@ work without server configuration.
 
 ## Stack
 
-PostgreSQL 16 with the `pg_trgm` extension · React 18 · TypeScript · Vite · Tailwind CSS · React Router (hash routing) ·
+PostgreSQL 18 with the `pg_trgm` extension · React 18 · TypeScript · Vite · Tailwind CSS · React Router (hash routing) ·
 Recharts · Lucide icons.
 
 ## Repository layout
