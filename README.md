@@ -12,7 +12,7 @@ The repository has three parts:
 | **Backend API** | [`backend/`](backend) | Node.js Express service running live PostgreSQL queries (`pg` pool) for real database operations. |
 | **Web interface** | `src/` | A React prototype that visualizes research metadata, searches, and citation analysis. |
 
-Live prototype (static demo): https://nova-stark.github.io/academic-repo/
+Live prototype (static demo): https://BalGovindB.github.io/academic-repo/
 
 ## How things are connected
 
