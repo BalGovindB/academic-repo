@@ -85,6 +85,14 @@ rank) · Statistics (citations by subject, papers per journal) · Search (title,
 (**Settings → Pages → Source: GitHub Actions**). The site uses hash URLs (for example `#/papers/1`), so direct links
 work without server configuration.
 
+## Documentation
+
+Comprehensive project documentation is available in the [`docs/`](docs/) directory:
+
+- [Project Abstract](docs/Project_Abstract.docx): Problem formulation, objectives, scope, and key deliverables.
+- [Database Design Document](docs/Database_Design_Document.docx): Relational schema, functional dependencies, BCNF normalization proofs, and business rules (with [Conceptual ER](docs/er_conceptual.png) and [Logical ER](docs/er_logical.png) diagrams).
+- [UI Design Document](docs/UI_Design_Document.docx): User interface specification, component architecture, and interaction flows.
+
 ## Stack
 
 PostgreSQL 18 with the `pg_trgm` extension · Node.js / Express · React 18 · TypeScript · Vite · Tailwind CSS · React Router · Recharts · Lucide icons.
@@ -96,7 +104,12 @@ backend/                  Express API service with PostgreSQL pool
   src/db.js               Database connection
   src/index.js            API endpoints (SQL Q1-Q21)
 db/                       SQL scripts 01-06 and notes
-docs/                     Design document and ER diagrams
+docs/                     Project documentation:
+  Project_Abstract.docx
+  Database_Design_Document.docx
+  UI_Design_Document.docx
+  er_conceptual.png
+  er_logical.png
 scripts/                  export-ui-data.sh, format-json.mjs
 src/
   App.tsx                 Layout and routes
