@@ -4,58 +4,66 @@ A relational database system for academic research **metadata** (not the papers 
 journals, publishers, subjects and the citations between papers. Course project for *23CSE202 Database Management
 Systems* (S3 B.Tech CSE, Amrita School of Computing, Amritapuri), Group A2.
 
-The repository has two parts:
+The repository has three parts:
 
 | Part | Folder | What it is |
 |---|---|---|
-| **Database** | [`db/`](db) | The PostgreSQL implementation: schema, sample data, queries, constraint tests, trigram-index demo. **This is the core of the project.** |
-| **Web interface** | `src/` | A React prototype that presents the same data. It is a static site (GitHub Pages) and **does not query PostgreSQL at run time**. |
+| **Database** | [`db/`](db) | The PostgreSQL implementation: schema, sample data, queries, constraint tests, trigram-index demo. **Core of the project.** |
+| **Backend API** | [`backend/`](backend) | Node.js Express service running live PostgreSQL queries (`pg` pool) for real database operations. |
+| **Web interface** | `src/` | A React prototype that visualizes research metadata, searches, and citation analysis. |
 
-Live prototype: https://balgovindb.github.io/academic-repo/
+Live prototype (static demo): https://nova-stark.github.io/academic-repo/
 
-## How the two parts are connected
+## How things are connected
 
-`src/data/repository.json` is **generated from the PostgreSQL database** by `scripts/export-ui-data.sh`
-(query: `db/06_export_ui_data.sql`). It contains the table rows only. Everything the interface displays beyond
-that is computed from those rows, the same way the SQL queries compute it:
+The React client communicates with the PostgreSQL database through the Express backend service when running locally, and gracefully falls back to bundled metadata for static deployments (GitHub Pages):
 
-- citation counts = number of `citation` rows pointing at a paper (SQL Q8)
-- citation ranking with ties (SQL Q9, `RANK()`)
-- citations by subject (SQL Q10) and papers per journal (SQL Q5)
-- the "Citation chain" on each paper page = every paper reachable by following "cites" links (SQL Q16, recursive query)
-- typo-tolerant search imitates `pg_trgm` trigram similarity in the browser (SQL Q18/Q19 do it in the database)
+- Overview & Metrics: Counts across entities and latest publications with live status badge.
+- Papers & Authors: Joined via bridge tables (`paper_author`), authors in explicit order.
+- Citation Graph: Computes multi-hop citation chains using PostgreSQL **Recursive CTE** (SQL Q16).
+- Analytics: Live rankings computed with window functions (`RANK()`, SQL Q9).
+- Typo-Tolerant Search: Uses PostgreSQL `pg_trgm` GIN index with `<%` word similarity (SQL Q18/Q19).
 
-Because the deployed site is static, a live database connection would need a separate server; this project does not
-include one.
+## Running the project locally
 
-## Database (`db/`)
+### 1. Database (`db/`)
 
-Run and checked on PostgreSQL 18.6; other versions are not tested.
-
+Start PostgreSQL (e.g. using Docker):
 ```bash
-createdb arm
-psql -d arm -v ON_ERROR_STOP=1 -f db/01_schema.sql    # 8 tables, constraints, triggers, indexes (incl. pg_trgm GIN)
-psql -d arm -v ON_ERROR_STOP=1 -f db/02_seed.sql      # 24 papers, 11 authors, 6 publishers, 8 journals, 9 subjects, 45 citations
-psql -d arm -f db/03_queries.sql                      # 21 demonstration queries
-psql -d arm -f db/04_constraint_tests.sql             # 39 rule-violation tests, expected: passed 39, failed 0 (on Windows add -v nulldev=NUL)
-psql -d arm -f db/05_trigram_demo.sql                 # 200,000-row EXPLAIN ANALYZE comparison, with and without the index
+docker run -d --name postgres-dev -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres
 ```
 
-In pgAdmin, run scripts 03 to 05 in the *PSQL Tool* (they use psql commands such as `\echo`). See
-[`db/README.md`](db/README.md) for the design decisions encoded in the schema.
+Initialize the database schema and seed data:
+```bash
+# Inside docker container or via psql:
+docker exec -i postgres-dev psql -U postgres -c "CREATE DATABASE arm;"
+Get-Content db/01_schema.sql | docker exec -i postgres-dev psql -U postgres -d arm -v ON_ERROR_STOP=1
+Get-Content db/02_seed.sql   | docker exec -i postgres-dev psql -U postgres -d arm -v ON_ERROR_STOP=1
+```
 
-Design documentation (ER diagrams, relational schema, functional dependencies and normalization to BCNF):
-[`docs/Database_Design_Document.docx`](docs/Database_Design_Document.docx), with the diagrams
-[`docs/er_conceptual.png`](docs/er_conceptual.png) and [`docs/er_logical.png`](docs/er_logical.png).
+Run test suite and trigram demo:
+```bash
+# 39 rule-violation constraint tests:
+Get-Content db/04_constraint_tests.sql | docker exec -i postgres-dev psql -U postgres -d arm
+```
 
-## Web interface
+### 2. Backend API (`backend/`)
 
-Requires Node.js 20 or later.
+Requires Node.js 18+.
+
+```bash
+cd backend
+npm install
+npm start        # runs on http://localhost:5000
+# or for development:
+npm run dev
+```
+
+### 3. Web interface (`src/`)
 
 ```bash
 npm install
-npm run dev        # development server
-npm run build      # production build (type-checks first)
+npm run dev      # runs Vite development server on http://localhost:5173
 ```
 
 To rebuild the interface data after changing the database (needs `psql` and `node`; set `PGDATABASE`, and
@@ -79,12 +87,14 @@ work without server configuration.
 
 ## Stack
 
-PostgreSQL 18 with the `pg_trgm` extension · React 18 · TypeScript · Vite · Tailwind CSS · React Router (hash routing) ·
-Recharts · Lucide icons.
+PostgreSQL 18 with the `pg_trgm` extension · Node.js / Express · React 18 · TypeScript · Vite · Tailwind CSS · React Router · Recharts · Lucide icons.
 
 ## Repository layout
 
 ```text
+backend/                  Express API service with PostgreSQL pool
+  src/db.js               Database connection
+  src/index.js            API endpoints (SQL Q1-Q21)
 db/                       SQL scripts 01-06 and notes
 docs/                     Design document and ER diagrams
 scripts/                  export-ui-data.sh, format-json.mjs
@@ -92,6 +102,7 @@ src/
   App.tsx                 Layout and routes
   pages/                  One file per page
   components/ui.tsx       Shared components
+  data/api.ts             API client with live PostgreSQL & static fallback
   data/repository.json    GENERATED from PostgreSQL (do not edit by hand)
   data/repository.ts      Typed data layer and derived views
   utils/search.ts         Search over title, author, journal, subject

@@ -26,7 +26,13 @@ INSERT INTO journal (journal_id, name, issn, publisher_id) VALUES
  (5,'Digital Humanities Quarterly', '1938-4122', 5),
  (6,'Applied Data Science',         '2310-5586', 1),
  (7,'Educational Futures',          '2415-9023', 4),
- (8,'Quantitative Social Review',   '2670-114X', 2);   -- carries no paper yet
+ (8,'Quantitative Social Review',   '2670-114X', 2),
+ (9,'Artificial Intelligence Review', '1573-7462', 1),
+ (10,'Neural Systems & Computation', '0899-7667', 3),
+ (11,'Cognitive Science Perspectives', '1551-6709', 2),
+ (12,'Policy & Data Governance',    '2053-9592', 4),
+ (13,'Computational Linguistics',   '0891-2017', 5),
+ (14,'Robotics & Autonomous Systems', '0921-8890', 6);
 
 INSERT INTO author (author_id, name, affiliation) VALUES
  (1,'Maya Chen',     'Northbridge Institute of Technology'),
@@ -76,7 +82,22 @@ INSERT INTO paper (paper_id, title, pub_year, doi, abstract, journal_id) VALUES
  (21,'Language models for bibliographic record matching',2023,'10.5555/arm.2023.0021','Resolving duplicate references across metadata sources.',6),
  (22,'Archival description and linked open data',2021,'10.5555/arm.2021.0022','Publishing finding aids as interoperable linked data.',5),
  (23,'Student engagement and open educational resources',2022,'10.5555/arm.2022.0023','Does free course material change how students participate?',7),
- (24,'Typographical errors in academic search queries',2023,'10.5555/arm.2023.0024','How often researchers misspell titles and what search engines do.',6);
+ (24,'Typographical errors in academic search queries',2023,'10.5555/arm.2023.0024','How often researchers misspell titles and what search engines do.',6),
+ (25,'Deep reinforcement learning for robot locomotion',2024,'10.5555/arm.2024.0025','Continuous policy gradient training on rugged terrain.',14),
+ (26,'Attention mechanisms in multilingual translation',2023,'10.5555/arm.2023.0026','Cross-lingual representations using sparse transformer attention.',13),
+ (27,'Algorithmic fairness in credit scoring models',2022,'10.5555/arm.2022.0027','Evaluating bias mitigation methods across demographic groups.',12),
+ (28,'Neural dynamics of working memory under cognitive fatigue',2023,'10.5555/arm.2023.0028','EEG coherence shifts during prolonged high-demand tasks.',10),
+ (29,'Symbolic reasoning integration in large language models',2024,'10.5555/arm.2024.0029','Neurosymbolic architectures bridging generative models and solvers.',9),
+ (30,'Sensory integration in human-robot collaboration',2021,'10.5555/arm.2021.0030','Haptic feedback and adaptive force control in assembly lines.',14),
+ (31,'Computational semantics of historical documents',2020,'10.5555/arm.2020.0031','Vector embeddings tracing concept drift across centuries.',13),
+ (32,'Ethics and accountability in public sector algorithms',2021,'10.5555/arm.2021.0032','Audit frameworks for decision support tools in civil service.',12),
+ (33,'Predictive modeling of climate-induced migration',2023,'10.5555/arm.2023.0033','Spatio-temporal forecasting combining census and climate data.',2),
+ (34,'Self-supervised contrastive learning on medical images',2022,'10.5555/arm.2022.0034','Unlabeled feature representations for radiological diagnosis.',9),
+ (35,'Neural circuit mechanisms of visual perception',2020,'10.5555/arm.2020.0035','Spike-timing dependent plasticity in early cortical stages.',10),
+ (36,'Generative models for structural materials discovery',2024,'10.5555/arm.2024.0036','Diffusion pipelines for crystal lattice candidates.',6),
+ (37,'Meta-learning strategies for low-resource NLP',2022,'10.5555/arm.2022.0037','Model-agnostic parameter adaptation across endangered dialects.',13),
+ (38,'Autonomous navigation in degraded GPS environments',2023,'10.5555/arm.2023.0038','Visual-inertial odometry fused with lidar odometry for drones.',14),
+ (39,'Explainable graph neural networks for drug discovery',2024,'10.5555/arm.2024.0039','Subgraph attribution scores for predicting molecular properties.',9);
 
 -- (paper_id, author_id, author_order)
 INSERT INTO paper_author (paper_id, author_id, author_order) VALUES
@@ -103,7 +124,22 @@ INSERT INTO paper_author (paper_id, author_id, author_order) VALUES
  (21,6,1),(21,7,2),(21,1,3),
  (22,5,1),(22,9,2),
  (23,1,1),(23,10,2),
- (24,6,1),(24,9,2);
+ (24,6,1),(24,9,2),
+ (25,4,1),(25,6,2),
+ (26,1,1),(26,7,2),
+ (27,2,1),(27,5,2),
+ (28,3,1),(28,10,2),
+ (29,1,1),(29,4,2),(29,9,3),
+ (30,6,1),(30,2,2),
+ (31,5,1),
+ (32,2,1),(32,7,2),
+ (33,3,1),(33,8,2),
+ (34,1,1),(34,2,2),
+ (35,8,1),
+ (36,7,1),(36,6,2),
+ (37,1,1),(37,5,2),
+ (38,4,1),(38,6,2),
+ (39,9,1),(39,1,2);
 
 -- Paper 19 deliberately has NO subject.
 INSERT INTO paper_subject (paper_id, subject_id) VALUES
@@ -129,7 +165,22 @@ INSERT INTO paper_subject (paper_id, subject_id) VALUES
  (21,1),(21,8),
  (22,6),(22,1),
  (23,4),
- (24,1),(24,8);
+ (24,1),(24,8),
+ (25,1),
+ (26,1),(26,6),
+ (27,7),(27,8),
+ (28,9),(28,3),
+ (29,1),(29,5),
+ (30,1),
+ (31,6),
+ (32,7),
+ (33,2),(33,7),
+ (34,1),(34,8),
+ (35,9),
+ (36,8),(36,5),
+ (37,1),(37,6),
+ (38,1),
+ (39,1),(39,8);
 
 -- (citing_paper_id, cited_paper_id): cited paper is always from an EARLIER year.
 INSERT INTO citation (citing_paper_id, cited_paper_id) VALUES
@@ -152,7 +203,21 @@ INSERT INTO citation (citing_paper_id, cited_paper_id) VALUES
  (9,13),
  (12,17),
  (14,19),
- (13,17);
+ (13,17),
+ (25,14),(25,30),
+ (26,7),(26,31),
+ (27,8),(27,13),
+ (28,16),(28,35),
+ (29,5),(29,7),(29,21),
+ (30,14),
+ (31,17),
+ (32,13),(32,17),
+ (33,20),(33,10),(33,15),
+ (34,7),(34,9),
+ (36,5),(36,8),(36,34),
+ (37,17),(37,31),
+ (38,14),(38,30),
+ (39,5),(39,7),(39,14);
 
 -- identity columns were given explicit ids: move the sequences past them
 SELECT setval(pg_get_serial_sequence('publisher','publisher_id'), (SELECT max(publisher_id) FROM publisher));

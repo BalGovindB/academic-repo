@@ -1,5 +1,6 @@
+import { useEffect, useState } from 'react'
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { citationsBySubject, papersPerJournal } from '../data/repository'
+import { getStatistics } from '../data/api'
 import { Card, Title } from '../components/ui'
 
 function HorizontalBars({ data, valueKey, label }: { data: Array<{ name: string } & Record<string, number | string>>; valueKey: string; label: string }) {
@@ -19,6 +20,20 @@ function HorizontalBars({ data, valueKey, label }: { data: Array<{ name: string 
 }
 
 export default function Statistics() {
+  const [stats, setStats] = useState<{
+    citationsBySubject: Array<{ name: string; citations: number }>;
+    papersPerJournal: Array<{ name: string; papers: number }>;
+  }>({ citationsBySubject: [], papersPerJournal: [] })
+
+  useEffect(() => {
+    getStatistics().then((res) => {
+      setStats({
+        citationsBySubject: res.citationsBySubject,
+        papersPerJournal: res.papersPerJournal,
+      })
+    })
+  }, [])
+
   return (
     <>
       <Title title="Repository statistics" intro="Citation and publication activity by research area and by journal." />
@@ -26,14 +41,15 @@ export default function Statistics() {
         <Card>
           <h2 className="mb-1 font-serif text-xl font-bold">Citations by subject</h2>
           <p className="mb-5 text-sm text-slate-500">Citations received by the papers of each subject. A paper with several subjects counts toward each of them.</p>
-          <HorizontalBars data={citationsBySubject()} valueKey="citations" label="Citations received per subject" />
+          <HorizontalBars data={stats.citationsBySubject} valueKey="citations" label="Citations received per subject" />
         </Card>
         <Card>
           <h2 className="mb-1 font-serif text-xl font-bold">Papers per journal</h2>
           <p className="mb-5 text-sm text-slate-500">Journals with no paper yet are shown with zero.</p>
-          <HorizontalBars data={papersPerJournal()} valueKey="papers" label="Number of papers per journal" />
+          <HorizontalBars data={stats.papersPerJournal} valueKey="papers" label="Number of papers per journal" />
         </Card>
       </div>
     </>
   )
 }
+

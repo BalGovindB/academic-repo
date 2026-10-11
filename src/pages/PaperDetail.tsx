@@ -1,11 +1,28 @@
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { citationChain, paperById } from '../data/repository'
+import { getPaperDetail, getCitationChain } from '../data/api'
+import type { Paper } from '../data/repository'
 import { Card, PaperLinks, Title } from '../components/ui'
 import { pluralize } from '../utils/format'
 
 export default function PaperDetail() {
   const { id } = useParams()
-  const paper = paperById.get(Number(id))
+  const paperId = Number(id)
+  const [paper, setPaper] = useState<(Paper & { cites: any[]; citedBy: any[] }) | null>(null)
+  const [chain, setChain] = useState<Array<{ id: number; title: string; year: number; depth: number }>>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setLoading(true)
+    Promise.all([getPaperDetail(paperId), getCitationChain(paperId)]).then(([pRes, cRes]) => {
+      setPaper(pRes.paper as any)
+      setChain(cRes.chain)
+      setLoading(false)
+    })
+  }, [paperId])
+
+  if (loading) return <p className="text-slate-600">Loading paper details...</p>
+
   if (!paper) {
     return (
       <>
@@ -14,9 +31,7 @@ export default function PaperDetail() {
       </>
     )
   }
-  const cites = paper.cites.map((c) => paperById.get(c)!)
-  const citedBy = paper.citedBy.map((c) => paperById.get(c)!)
-  const chain = citationChain(paper.id)
+
 
   return (
     <>
@@ -52,12 +67,12 @@ export default function PaperDetail() {
 
       <section className="mt-8 grid gap-4 md:grid-cols-2">
         <Card>
-          <h2 className="font-serif text-xl font-bold">Cites ({cites.length})</h2>
-          <PaperLinks list={cites} empty="This paper cites no other paper in the repository." />
+          <h2 className="font-serif text-xl font-bold">Cites ({paper.cites.length})</h2>
+          <PaperLinks list={paper.cites} empty="This paper cites no other paper in the repository." />
         </Card>
         <Card>
-          <h2 className="font-serif text-xl font-bold">Cited by ({pluralize(citedBy.length, 'paper')})</h2>
-          <PaperLinks list={citedBy} empty="No paper in the repository cites this one yet." />
+          <h2 className="font-serif text-xl font-bold">Cited by ({pluralize(paper.citedBy.length, 'paper')})</h2>
+          <PaperLinks list={paper.citedBy} empty="No paper in the repository cites this one yet." />
         </Card>
       </section>
 
@@ -71,10 +86,10 @@ export default function PaperDetail() {
             <p className="mt-3 text-sm text-slate-500">Nothing to follow: this paper cites no other paper.</p>
           ) : (
             <ul className="mt-3 space-y-1 text-sm">
-              {chain.map(({ paper: p, depth }) => (
-                <li key={p.id} style={{ paddingLeft: `${(depth - 1) * 20}px` }}>
-                  <span className="mr-2 rounded bg-stone-100 px-1.5 py-0.5 font-mono text-xs text-slate-600">step {depth}</span>
-                  <Link to={`/papers/${p.id}`}>{p.title}</Link> <span className="text-slate-500">({p.year})</span>
+              {chain.map((item) => (
+                <li key={item.id} style={{ paddingLeft: `${(item.depth - 1) * 20}px` }}>
+                  <span className="mr-2 rounded bg-stone-100 px-1.5 py-0.5 font-mono text-xs text-slate-600">step {item.depth}</span>
+                  <Link to={`/papers/${item.id}`}>{item.title}</Link> <span className="text-slate-500">({item.year})</span>
                 </li>
               ))}
             </ul>
