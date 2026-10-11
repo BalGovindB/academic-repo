@@ -12,13 +12,13 @@ The repository has three parts:
 | **Backend API** | [`backend/`](backend) | Node.js Express service running live PostgreSQL queries (`pg` pool) for real database operations. |
 | **Web interface** | `src/` | A React prototype that visualizes research metadata, searches, and citation analysis. |
 
-Live prototype (static demo): https://balgovindb.github.io/academic-repo/
+Live prototype (static demo): https://nova-stark.github.io/academic-repo/
 
 ## How things are connected
 
-The React client communicates with the PostgreSQL database through the Express backend service:
+The React client communicates with the PostgreSQL database through the Express backend service when running locally, and gracefully falls back to bundled metadata for static deployments (GitHub Pages):
 
-- Overview & Metrics: Counts across entities and latest publications.
+- Overview & Metrics: Counts across entities and latest publications with live status badge.
 - Papers & Authors: Joined via bridge tables (`paper_author`), authors in explicit order.
 - Citation Graph: Computes multi-hop citation chains using PostgreSQL **Recursive CTE** (SQL Q16).
 - Analytics: Live rankings computed with window functions (`RANK()`, SQL Q9).
@@ -87,12 +87,14 @@ work without server configuration.
 
 ## Stack
 
-PostgreSQL 18 with the `pg_trgm` extension · React 18 · TypeScript · Vite · Tailwind CSS · React Router (hash routing) ·
-Recharts · Lucide icons.
+PostgreSQL 18 with the `pg_trgm` extension · Node.js / Express · React 18 · TypeScript · Vite · Tailwind CSS · React Router · Recharts · Lucide icons.
 
 ## Repository layout
 
 ```text
+backend/                  Express API service with PostgreSQL pool
+  src/db.js               Database connection
+  src/index.js            API endpoints (SQL Q1-Q21)
 db/                       SQL scripts 01-06 and notes
 docs/                     Design document and ER diagrams
 scripts/                  export-ui-data.sh, format-json.mjs
@@ -100,6 +102,7 @@ src/
   App.tsx                 Layout and routes
   pages/                  One file per page
   components/ui.tsx       Shared components
+  data/api.ts             API client with live PostgreSQL & static fallback
   data/repository.json    GENERATED from PostgreSQL (do not edit by hand)
   data/repository.ts      Typed data layer and derived views
   utils/search.ts         Search over title, author, journal, subject
